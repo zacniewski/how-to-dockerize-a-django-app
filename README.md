@@ -123,7 +123,31 @@ EXPOSE 8000
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 ```
 
-- build an image:  
+9 . Create `.dockerignore`:  
+```sh
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env
+pip-log.txt
+pip-delete-this-directory.txt
+.tox
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git
+.mypy_cache
+.pytest_cache
+.hypothesis
+```
+
+10. Build an image:  
 ```sh
 $ docker build -t django-docker .
 ```
@@ -176,4 +200,51 @@ sudo docker build -t django-docker .
 [sudo] password for artur:           
 REPOSITORY      TAG       IMAGE ID       CREATED          SIZE
 django-docker   latest    9b974a8fa5aa   26 minutes ago   1.18GB
+```
+11. Running the container:  
+```sh
+$ sudo docker run -d django-docker 
+feb79c5cc50cba2be3986b9a0e40e9bb7cdfe478a3c4e55e963f6d004dd85f57
+$ sudo docker ps
+CONTAINER ID   IMAGE           COMMAND                  CREATED          STATUS          PORTS      NAMES
+feb79c5cc50c   django-docker   "python manage.py ru…"   58 seconds ago   Up 57 seconds   8000/tcp   magical_kapitsa
+```
+12. Interactive shell
+```sh
+$ sudo docker run -it django-docker sh
+# pwd
+/app
+# ls -lah
+total 44K
+drwxr-xr-x 1 root root 4.0K Aug 24 18:17 .
+drwxr-xr-x 1 root root 4.0K Aug 24 19:39 ..
+-rw-rw-r-- 1 root root  201 Aug 23 18:31 .dockerignore
+-rw-rw-r-- 1 root root 4.6K Aug 23 18:46 .gitignore
+drwxrwxr-x 5 root root 4.0K Aug 23 18:56 .venv
+-rw-rw-r-- 1 root root  773 Aug 24 18:14 Dockerfile
+-rw-rw-r-- 1 root root 3.2K Aug 24 18:16 README.md
+-rw-rw-r-- 1 root root    0 Aug 23 19:38 compose.yaml
+-rw-r--r-- 1 root root    0 Aug 23 20:16 db.sqlite3
+-rwxrwxr-x 1 root root  680 Aug 23 19:35 manage.py
+drwxrwxr-x 3 root root 4.0K Aug 23 20:12 my_docker_django_project
+-rw-rw-r-- 1 root root   66 Aug 23 20:00 requirements.txt
+# whoami
+root
+# exit
+```
+
+13. Running the container with Django project
+```sh
+$ sudo docker run -it -p 8000:8000 django-docker 
+Watching for file changes with StatReloader
+Performing system checks...
+
+System check identified no issues (0 silenced).
+
+You have 18 unapplied migration(s). Your project may not work properly until you apply the migrations for app(s): admin, auth, contenttypes, sessions.
+Run 'python manage.py migrate' to apply them.
+August 24, 2025 - 19:45:37
+Django version 5.2.5, using settings 'my_docker_django_project.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
 ```
