@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-d2eam#=d@ic=(fa+5@bzec&z^t_$zefc5b356ba=h)=lrjzosi'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=lambda v: [s.strip() for s in v.split(',')])
 
@@ -73,11 +73,15 @@ WSGI_APPLICATION = 'my_docker_django_project.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+     'default': {
+         'ENGINE': f'django.db.backends.{config('DATABASE_ENGINE')}',
+         'NAME': config('DATABASE_NAME'),
+         'USER': config('DATABASE_USERNAME'),
+         'PASSWORD': config('DATABASE_PASSWORD'),
+         'HOST': config('DATABASE_HOST'),
+         'PORT': config('DATABASE_PORT'),
+     }
+ }
 
 
 # Password validation
