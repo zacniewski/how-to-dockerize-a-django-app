@@ -322,7 +322,12 @@ EXPOSE 8000
  
 # Start the application using Gunicorn
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "my_docker_django_app.wsgi:application"]
-```
+```  
+- we've added:  
+    - the `slim` version of Python,  
+    - multi-stage build process to the Dockerfile,  
+    - Gunicorn WSGI server.  
+
 #### 15. Build new image
 ```sh
 $ sudo docker build -t django-docker-image-v2 .
@@ -370,7 +375,7 @@ django-docker-image      latest    fe47a5ac0a68   2 hours ago      1.18GB
 > Quite impressive difference of sizes :smiley:
 
 #### 16. Configure the Docker Compose file  
-
+- it's time to  manage multi-container applications. Here, we’ll define both a Django container and a PostgreSQL database container,  
 - add new credentials to `.env` file:  
 ```sh
 DJANGO_LOGLEVEL=info
@@ -401,4 +406,206 @@ DATABASES = {
 #### 17. Build and run your new Django project
 ```sh
 $ sudo docker compose up --build
+```
+- if the [warning](https://forums.docker.com/t/warn-0000-the-he-variable-is-not-set-defaulting-to-a-blank-string/137212) like below appears:
+```sh
+WARN[0000] The "qyu" variable is not set. Defaulting to a blank string.
+```
+we should check if some of the credentials contains the `$` sign, after replacing the "suspicious" character (change `$` into something else) the warnings should disappear:  
+```sh
+[+] Running 15/15
+ ✔ db Pulled                                                                                    274.7s 
+#1 [internal] load local bake definitions
+#1 reading from stdin 629B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 1.30kB done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/python:3.13-slim
+#3 DONE 2.8s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 243B done
+#4 DONE 0.0s
+
+#5 [builder 1/6] FROM docker.io/library/python:3.13-slim@sha256:27f90d79cc85e9b7b2560063ef44fa0e9eaae7a7c3f5a9f74563065c5477cc24
+#5 resolve docker.io/library/python:3.13-slim@sha256:27f90d79cc85e9b7b2560063ef44fa0e9eaae7a7c3f5a9f74563065c5477cc24 0.0s done
+#5 sha256:7b1ad37e982c43c58d01111d612787fd261190d1587466b7c0469299af38debe 0B / 1.29MB 0.2s
+#5 sha256:31b0d2470ce12eba9b1d8d97762511adddf82bcc6f19cdc2acf5d459d6aab501 0B / 11.73MB 0.2s
+#5 sha256:8c141999d08327ce1db0a24fd7d25391dc2e4e0e2c14d70d0458fdf18761cfff 0B / 250B 0.2s
+#5 sha256:27f90d79cc85e9b7b2560063ef44fa0e9eaae7a7c3f5a9f74563065c5477cc24 10.37kB / 10.37kB done
+#5 sha256:9665f5d196e5856b0362a952ee582bcd28e7b790729de83f64b70975ff4481bd 1.75kB / 1.75kB done
+#5 sha256:29e93e1cbf397bec486052ed53c12cfd104158418858c13a4e57329623f5e632 5.44kB / 5.44kB done
+#5 sha256:8c141999d08327ce1db0a24fd7d25391dc2e4e0e2c14d70d0458fdf18761cfff 250B / 250B 0.5s done
+#5 ...
+
+#6 [internal] load build context
+#6 transferring context: 41.98MB 1.0s done
+#6 DONE 1.1s
+
+#5 [builder 1/6] FROM docker.io/library/python:3.13-slim@sha256:27f90d79cc85e9b7b2560063ef44fa0e9eaae7a7c3f5a9f74563065c5477cc24
+#5 sha256:7b1ad37e982c43c58d01111d612787fd261190d1587466b7c0469299af38debe 0B / 1.29MB 5.2s
+#5 sha256:31b0d2470ce12eba9b1d8d97762511adddf82bcc6f19cdc2acf5d459d6aab501 0B / 11.73MB 5.2s
+#5 sha256:7b1ad37e982c43c58d01111d612787fd261190d1587466b7c0469299af38debe 1.05MB / 1.29MB 5.4s
+#5 sha256:31b0d2470ce12eba9b1d8d97762511adddf82bcc6f19cdc2acf5d459d6aab501 1.05MB / 11.73MB 5.6s
+#5 sha256:7b1ad37e982c43c58d01111d612787fd261190d1587466b7c0469299af38debe 1.29MB / 1.29MB 5.6s done
+#5 extracting sha256:7b1ad37e982c43c58d01111d612787fd261190d1587466b7c0469299af38debe 0.1s done
+#5 sha256:31b0d2470ce12eba9b1d8d97762511adddf82bcc6f19cdc2acf5d459d6aab501 2.10MB / 11.73MB 6.2s
+#5 sha256:31b0d2470ce12eba9b1d8d97762511adddf82bcc6f19cdc2acf5d459d6aab501 3.15MB / 11.73MB 8.5s
+#5 sha256:31b0d2470ce12eba9b1d8d97762511adddf82bcc6f19cdc2acf5d459d6aab501 4.19MB / 11.73MB 10.1s
+#5 sha256:31b0d2470ce12eba9b1d8d97762511adddf82bcc6f19cdc2acf5d459d6aab501 5.24MB / 11.73MB 11.2s
+#5 sha256:31b0d2470ce12eba9b1d8d97762511adddf82bcc6f19cdc2acf5d459d6aab501 6.29MB / 11.73MB 12.2s
+#5 sha256:31b0d2470ce12eba9b1d8d97762511adddf82bcc6f19cdc2acf5d459d6aab501 7.34MB / 11.73MB 13.2s
+#5 sha256:31b0d2470ce12eba9b1d8d97762511adddf82bcc6f19cdc2acf5d459d6aab501 8.39MB / 11.73MB 13.6s
+#5 sha256:31b0d2470ce12eba9b1d8d97762511adddf82bcc6f19cdc2acf5d459d6aab501 9.44MB / 11.73MB 14.1s
+#5 sha256:31b0d2470ce12eba9b1d8d97762511adddf82bcc6f19cdc2acf5d459d6aab501 10.49MB / 11.73MB 14.7s
+#5 sha256:31b0d2470ce12eba9b1d8d97762511adddf82bcc6f19cdc2acf5d459d6aab501 11.53MB / 11.73MB 16.1s
+#5 sha256:31b0d2470ce12eba9b1d8d97762511adddf82bcc6f19cdc2acf5d459d6aab501 11.73MB / 11.73MB 16.2s done
+#5 extracting sha256:31b0d2470ce12eba9b1d8d97762511adddf82bcc6f19cdc2acf5d459d6aab501 0.1s
+#5 extracting sha256:31b0d2470ce12eba9b1d8d97762511adddf82bcc6f19cdc2acf5d459d6aab501 0.4s done
+#5 extracting sha256:8c141999d08327ce1db0a24fd7d25391dc2e4e0e2c14d70d0458fdf18761cfff done
+#5 DONE 16.8s
+
+#7 [stage-1 2/6] RUN useradd -m -r appuser &&    mkdir /app &&    chown -R appuser /app
+#7 ...
+
+#8 [builder 2/6] RUN mkdir /app
+#8 DONE 0.5s
+
+#7 [stage-1 2/6] RUN useradd -m -r appuser &&    mkdir /app &&    chown -R appuser /app
+#7 DONE 0.5s
+
+#9 [builder 3/6] WORKDIR /app
+#9 DONE 0.1s
+
+#10 [builder 4/6] RUN pip install --upgrade pip
+#10 1.925 Requirement already satisfied: pip in /usr/local/lib/python3.13/site-packages (25.2)
+#10 2.315 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#10 DONE 2.7s
+
+#11 [builder 5/6] COPY requirements.txt /app/
+#11 DONE 0.1s
+
+#12 [builder 6/6] RUN pip install --no-cache-dir -r requirements.txt
+#12 2.062 Collecting asgiref==3.9.1 (from -r requirements.txt (line 1))
+#12 2.336   Downloading asgiref-3.9.1-py3-none-any.whl.metadata (9.3 kB)
+#12 2.600 Collecting Django==5.2.5 (from -r requirements.txt (line 2))
+#12 2.663   Downloading django-5.2.5-py3-none-any.whl.metadata (4.1 kB)
+#12 2.760 Collecting python-decouple==3.8 (from -r requirements.txt (line 3))
+#12 2.826   Downloading python_decouple-3.8-py3-none-any.whl.metadata (14 kB)
+#12 2.914 Collecting sqlparse==0.5.3 (from -r requirements.txt (line 4))
+#12 2.984   Downloading sqlparse-0.5.3-py3-none-any.whl.metadata (3.9 kB)
+#12 3.077 Collecting gunicorn (from -r requirements.txt (line 5))
+#12 3.163   Downloading gunicorn-23.0.0-py3-none-any.whl.metadata (4.4 kB)
+#12 3.363 Collecting psycopg2-binary (from -r requirements.txt (line 6))
+#12 3.432   Downloading psycopg2_binary-2.9.10-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.9 kB)
+#12 3.523 Collecting packaging (from gunicorn->-r requirements.txt (line 5))
+#12 3.599   Downloading packaging-25.0-py3-none-any.whl.metadata (3.3 kB)
+#12 3.677 Downloading asgiref-3.9.1-py3-none-any.whl (23 kB)
+#12 3.764 Downloading django-5.2.5-py3-none-any.whl (8.3 MB)
+#12 11.61    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.3/8.3 MB 1.0 MB/s  0:00:07
+#12 11.80 Downloading python_decouple-3.8-py3-none-any.whl (9.9 kB)
+#12 11.87 Downloading sqlparse-0.5.3-py3-none-any.whl (44 kB)
+#12 12.08 Downloading gunicorn-23.0.0-py3-none-any.whl (85 kB)
+#12 12.28 Downloading psycopg2_binary-2.9.10-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.0 MB)
+#12 14.68    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.0/3.0 MB 1.2 MB/s  0:00:02
+#12 14.75 Downloading packaging-25.0-py3-none-any.whl (66 kB)
+#12 14.87 Installing collected packages: python-decouple, sqlparse, psycopg2-binary, packaging, asgiref, gunicorn, Django
+#12 17.12 
+#12 17.12 Successfully installed Django-5.2.5 asgiref-3.9.1 gunicorn-23.0.0 packaging-25.0 psycopg2-binary-2.9.10 python-decouple-3.8 sqlparse-0.5.3
+#12 17.12 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#12 DONE 17.6s
+
+#13 [stage-1 3/6] COPY --from=builder /usr/local/lib/python3.13/site-packages/ /usr/local/lib/python3.13/site-packages/
+#13 DONE 0.9s
+
+#14 [stage-1 4/6] COPY --from=builder /usr/local/bin/ /usr/local/bin/
+#14 DONE 0.1s
+
+#15 [stage-1 5/6] WORKDIR /app
+#15 DONE 0.0s
+
+#16 [stage-1 6/6] COPY --chown=appuser:appuser . .
+#16 DONE 0.6s
+
+#17 exporting to image
+#17 exporting layers
+#17 exporting layers 0.8s done
+#17 writing image sha256:dd06d662d3b13b4ed5c89a31904d30cceba9ae2518e601f5a501bf0bb0b231e7 done
+#17 naming to docker.io/library/how-to-dockerize-a-django-app-django-web done
+#17 DONE 0.8s
+
+#18 resolving provenance for metadata file
+#18 DONE 0.0s
+[+] Running 5/5
+ ✔ how-to-dockerize-a-django-app-django-web              Built                                    0.0s 
+ ✔ Network how-to-dockerize-a-django-app_default         Created                                  0.1s 
+ ✔ Volume "how-to-dockerize-a-django-app_postgres_data"  Created                                  0.0s 
+ ✔ Container how-to-dockerize-a-django-app-db-1          Created                                  0.1s 
+ ✔ Container django-docker-container-v2                  Created                                  0.0s 
+Attaching to django-docker-container-v2, db-1
+db-1  | The files belonging to this database system will be owned by user "postgres".
+db-1  | This user must also own the server process.
+db-1  | 
+db-1  | The database cluster will be initialized with locale "en_US.utf8".
+db-1  | The default database encoding has accordingly been set to "UTF8".
+db-1  | The default text search configuration will be set to "english".
+db-1  | 
+db-1  | Data page checksums are disabled.
+db-1  | 
+db-1  | fixing permissions on existing directory /var/lib/postgresql/data ... ok
+db-1  | creating subdirectories ... ok
+db-1  | selecting dynamic shared memory implementation ... posix
+db-1  | selecting default "max_connections" ... 100
+db-1  | selecting default "shared_buffers" ... 128MB
+db-1  | selecting default time zone ... Etc/UTC
+db-1  | creating configuration files ... ok
+db-1  | running bootstrap script ... ok
+db-1  | performing post-bootstrap initialization ... ok
+django-docker-container-v2  | [2025-08-26 11:08:57 +0000] [1] [INFO] Starting gunicorn 23.0.0
+django-docker-container-v2  | [2025-08-26 11:08:57 +0000] [1] [INFO] Listening at: http://0.0.0.0:8000 (1)
+django-docker-container-v2  | [2025-08-26 11:08:57 +0000] [1] [INFO] Using worker: sync
+django-docker-container-v2  | [2025-08-26 11:08:57 +0000] [7] [INFO] Booting worker with pid: 7
+django-docker-container-v2  | [2025-08-26 11:08:58 +0000] [8] [INFO] Booting worker with pid: 8
+django-docker-container-v2  | [2025-08-26 11:08:58 +0000] [9] [INFO] Booting worker with pid: 9
+db-1                        | syncing data to disk ... ok
+db-1                        | 
+db-1                        | 
+db-1                        | Success. You can now start the database server using:
+db-1                        | 
+db-1                        |     pg_ctl -D /var/lib/postgresql/data -l logfile start
+db-1                        | 
+db-1                        | initdb: warning: enabling "trust" authentication for local connections
+db-1                        | initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+db-1                        | waiting for server to start....2025-08-26 11:08:59.045 UTC [48] LOG:  starting PostgreSQL 17.6 (Debian 17.6-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+db-1                        | 2025-08-26 11:08:59.048 UTC [48] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+db-1                        | 2025-08-26 11:08:59.057 UTC [51] LOG:  database system was shut down at 2025-08-26 11:08:57 UTC
+db-1                        | 2025-08-26 11:08:59.064 UTC [48] LOG:  database system is ready to accept connections
+db-1                        |  done
+db-1                        | server started
+db-1                        | CREATE DATABASE
+db-1                        | 
+db-1                        | 
+db-1                        | /usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/*
+db-1                        | 
+db-1                        | waiting for server to shut down....2025-08-26 11:08:59.281 UTC [48] LOG:  received fast shutdown request
+db-1                        | 2025-08-26 11:08:59.283 UTC [48] LOG:  aborting any active transactions
+db-1                        | 2025-08-26 11:08:59.285 UTC [48] LOG:  background worker "logical replication launcher" (PID 54) exited with exit code 1
+db-1                        | 2025-08-26 11:08:59.285 UTC [49] LOG:  shutting down
+db-1                        | 2025-08-26 11:08:59.288 UTC [49] LOG:  checkpoint starting: shutdown immediate
+db-1                        | 2025-08-26 11:08:59.683 UTC [49] LOG:  checkpoint complete: wrote 925 buffers (5.6%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.022 s, sync=0.359 s, total=0.398 s; sync files=301, longest=0.003 s, average=0.002 s; distance=4256 kB, estimate=4256 kB; lsn=0/1915960, redo lsn=0/1915960
+db-1                        | 2025-08-26 11:08:59.691 UTC [48] LOG:  database system is shut down
+db-1                        |  done
+db-1                        | server stopped
+db-1                        | 
+db-1                        | PostgreSQL init process complete; ready for start up.
+db-1                        | 
+db-1                        | 2025-08-26 11:08:59.816 UTC [1] LOG:  starting PostgreSQL 17.6 (Debian 17.6-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+db-1                        | 2025-08-26 11:08:59.817 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+db-1                        | 2025-08-26 11:08:59.817 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+db-1                        | 2025-08-26 11:08:59.821 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+db-1                        | 2025-08-26 11:08:59.828 UTC [64] LOG:  database system was shut down at 2025-08-26 11:08:59 UTC
+db-1                        | 2025-08-26 11:08:59.837 UTC [1] LOG:  database system is ready to accept connections
 ```
