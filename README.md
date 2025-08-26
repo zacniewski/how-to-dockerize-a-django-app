@@ -609,3 +609,5 @@ db-1                        | 2025-08-26 11:08:59.821 UTC [1] LOG:  listening on
 db-1                        | 2025-08-26 11:08:59.828 UTC [64] LOG:  database system was shut down at 2025-08-26 11:08:59 UTC
 db-1                        | 2025-08-26 11:08:59.837 UTC [1] LOG:  database system is ready to accept connections
 ```
+
+- now, when we visit the `http://0.0.0.0:8000`, we should see the Django project starting page
